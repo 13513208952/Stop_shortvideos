@@ -2,10 +2,6 @@ package com.android.webview
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
 import android.util.Log
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
@@ -81,7 +77,11 @@ class ModelInferenceHelper(private val context: Context) {
             interp.runForMultipleInputsOutputs(arrayOf(inputBuffer), outputMap)
 
             val scores = outputArray[0]
-            Log.d(TAG, "Scores: notrelated=${scores[0]}, shortvideo=${scores[1]}")
+            val total = scores[0] + scores[1]
+            val notRelatedPct = if (total > 0) scores[0] / total * 100 else 0f
+            val shortVideoPct = if (total > 0) scores[1] / total * 100 else 0f
+            Log.i(TAG, "Confidence: notrelated=%.2f%% (%.4f), shortvideo=%.2f%% (%.4f)".format(
+                notRelatedPct, scores[0], shortVideoPct, scores[1]))
 
             val maxIndex = scores.indices.maxByOrNull { scores[it] } ?: 0
             when (maxIndex) {
@@ -96,34 +96,13 @@ class ModelInferenceHelper(private val context: Context) {
     }
 
     /**
-。     * Preprocess: PadWhite → Resize → Normalize
-     * 1. Calculate scale to fit image into 295x603 while maintaining aspect ratio
-     * 2. Place scaled image centered on a white 295x603 canvas
-     * 3. Normalize pixels with ImageNet mean/std
+     * Preprocess: Stretch → Normalize
+     * 1. Directly stretch (resize) the image to 295x603 ignoring aspect ratio
+     * 2. Normalize pixels with custom mean/std
      */
     private fun preprocessBitmap(bitmap: Bitmap): ByteBuffer {
-        // Create white canvas at model input size
-        val paddedBitmap = Bitmap.createBitmap(INPUT_WIDTH, INPUT_HEIGHT, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(paddedBitmap)
-        canvas.drawColor(Color.WHITE)
-
-        // Calculate scaling to fit within INPUT_WIDTH x INPUT_HEIGHT
-        val scaleW = INPUT_WIDTH.toFloat() / bitmap.width
-        val scaleH = INPUT_HEIGHT.toFloat() / bitmap.height
-        val scale = minOf(scaleW, scaleH)
-
-        val scaledWidth = (bitmap.width * scale).toInt()
-        val scaledHeight = (bitmap.height * scale).toInt()
-
-        // Center the image on the canvas
-        val left = (INPUT_WIDTH - scaledWidth) / 2
-        val top = (INPUT_HEIGHT - scaledHeight) / 2
-
-        val srcRect = Rect(0, 0, bitmap.width, bitmap.height)
-        val dstRect = Rect(left, top, left + scaledWidth, top + scaledHeight)
-
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
-        canvas.drawBitmap(bitmap, srcRect, dstRect, paint)
+        // Directly stretch the image to model input size (ignoring aspect ratio)
+        val stretchedBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_WIDTH, INPUT_HEIGHT, true)
 
         // Convert to normalized float buffer (NHWC)
         val bufferSize = 1 * INPUT_HEIGHT * INPUT_WIDTH * INPUT_CHANNELS * PIXEL_SIZE
@@ -132,8 +111,10 @@ class ModelInferenceHelper(private val context: Context) {
         }
 
         val pixels = IntArray(INPUT_WIDTH * INPUT_HEIGHT)
-        paddedBitmap.getPixels(pixels, 0, INPUT_WIDTH, 0, 0, INPUT_WIDTH, INPUT_HEIGHT)
-        paddedBitmap.recycle()
+        stretchedBitmap.getPixels(pixels, 0, INPUT_WIDTH, 0, 0, INPUT_WIDTH, INPUT_HEIGHT)
+        if (stretchedBitmap != bitmap) {
+            stretchedBitmap.recycle()
+        }
 
         for (y in 0 until INPUT_HEIGHT) {
             for (x in 0 until INPUT_WIDTH) {

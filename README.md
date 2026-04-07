@@ -33,7 +33,7 @@ app/src/main/
 ├── java/com/android/webview/
 │   ├── MainActivity.kt             # 主界面：服务状态、图标管理、后台隐藏控制
 │   ├── BlockAccessibilityService.kt # 核心：无障碍服务，截图→推理→返回
-│   ├── ModelInferenceHelper.kt      # TFLite 模型加载、预处理（PadWhite→Resize→Normalize）、推理
+│   ├── ModelInferenceHelper.kt      # TFLite 模型加载、预处理（Stretch→Normalize）、推理
 │   ├── IconHideManager.kt           # 桌面图标显示/隐藏管理（通过 Activity Alias 启停）
 │   ├── AppPreferences.kt           # SharedPreferences 封装
 │   ├── ScreenUnlockReceiver.kt     # 监听屏幕解锁，触发检测循环
@@ -106,7 +106,7 @@ cd blockshortvideos
 | 训练样本数 | 8,928 |
 | 归一化 | mean=[0.5679, 0.5574, 0.5495], std=[0.399, 0.3966, 0.4008] |
 
-**预处理流程**：原始截图 → 等比缩放适配 295×603 → 白色画布居中填充 → 像素归一化
+**预处理流程**：原始截图 → 直接拉伸至 295×603 → 像素归一化
 
 ## ⚠️ 注意事项
 
