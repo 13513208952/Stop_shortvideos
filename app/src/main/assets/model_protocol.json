@@ -1,0 +1,32 @@
+{
+    "metadata": {
+        "model_name": "Bili_Detector_V2_AutoCalibrated",
+        "date": "2026-04-07",
+        "sample_count": 8928
+    },
+    "tflite": {
+        "file": "bili_binary_model_v2.tflite",
+        "runtime": "LiteRT",
+        "dtype": "float32"
+    },
+    "input": {
+        "layout": "NHWC",
+        "dims": [1, 603, 295, 3],
+        "height": 603,
+        "width": 295,
+        "channels": 3,
+        "dtype": "float32",
+        "norm_params": {
+            "mean": [0.5679, 0.5574, 0.5495],
+            "std": [0.399, 0.3966, 0.4008]
+        }
+    },
+    "output": {
+        "dims": [1, 2],
+        "dtype": "float32",
+        "labels": {
+            "0": "notrelated",
+            "1": "shortvideo"
+        }
+    }
+}

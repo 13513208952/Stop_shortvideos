@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Android System Webview</string>
+    <string name="accessibility_service_description">短视频拦截服务：自动检测当前屏幕内容，识别并拦截短视频页面。</string>
+
+    <string name="btn_open_accessibility">开启无障碍服务</string>
+    <string name="service_status_on">✅ 无障碍服务运行中</string>
+    <string name="service_status_off">❌ 无障碍服务未启动</string>
+
+    <string name="label_timer_hide">定时隐藏桌面图标</string>
+    <string name="hint_hours">小时</string>
+    <string name="hint_minutes">分钟</string>
+    <string name="hint_seconds">秒</string>
+    <string name="btn_timer_hide">定时隐藏图标</string>
+    <string name="btn_permanent_hide">永久隐藏桌面图标</string>
+    <string name="btn_show_icon">显示桌面图标</string>
+
+    <string name="btn_enable_hide_recents">启用隐藏后台</string>
+    <string name="btn_disable_hide_recents">停止隐藏后台</string>
+    <string name="recents_status_hidden">后台已隐藏</string>
+    <string name="recents_status_visible">后台正常显示</string>
+
+    <string name="detection_status_idle">检测状态：空闲</string>
+    <string name="detection_status_normal">检测状态：常规 (10秒/次)</string>
+    <string name="detection_status_activated">检测状态：激活 (2秒/次)</string>
+
+    <string name="toast_icon_hidden_permanent">桌面图标已永久隐藏\n拨号 *#*#7266#*#* 可重新打开</string>
+    <string name="toast_icon_hidden_timer">桌面图标已隐藏，将在 %1$s 后恢复</string>
+    <string name="toast_icon_shown">桌面图标已恢复显示</string>
+    <string name="toast_timer_invalid">请输入有效的时间</string>
+    <string name="toast_recents_hidden">已启用隐藏后台</string>
+    <string name="toast_recents_shown">已停止隐藏后台</string>
+</resources>
